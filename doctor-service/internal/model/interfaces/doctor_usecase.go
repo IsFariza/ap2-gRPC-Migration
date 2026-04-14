@@ -7,7 +7,7 @@ import (
 )
 
 type DoctorUseCase interface {
-	Create(ctx context.Context, doc model.Doctor) (*model.Doctor, error)
+	Create(ctx context.Context, doc *model.Doctor) (*model.Doctor, error)
 	GetByID(ctx context.Context, id string) (*model.Doctor, error)
 	List(ctx context.Context) ([]*model.Doctor, error)
 }

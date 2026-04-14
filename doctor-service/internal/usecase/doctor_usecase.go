@@ -17,7 +17,7 @@ func NewDoctorUseCase(repo interfaces.DoctorRepository) interfaces.DoctorUseCase
 	}
 }
 
-func (uc *doctorUseCase) Create(ctx context.Context, doc model.Doctor) (*model.Doctor, error) {
+func (uc *doctorUseCase) Create(ctx context.Context, doc *model.Doctor) (*model.Doctor, error) {
 	if doc.FullName == "" {
 		return nil, model.ErrNameRequired
 	}
@@ -33,12 +33,12 @@ func (uc *doctorUseCase) Create(ctx context.Context, doc model.Doctor) (*model.D
 		return nil, model.ErrEmailUsed
 	}
 
-	err := uc.repo.Create(ctx, &doc)
+	err := uc.repo.Create(ctx, doc)
 	if err != nil {
 		return nil, err
 	}
 
-	return &doc, nil
+	return doc, nil
 }
 
 func (uc *doctorUseCase) GetByID(ctx context.Context, id string) (*model.Doctor, error) {
