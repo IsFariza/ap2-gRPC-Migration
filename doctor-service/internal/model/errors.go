@@ -7,7 +7,6 @@ var (
 	ErrEmailRequired          = errors.New("doctor email is required")
 	ErrInvalidEmail           = errors.New("invalid email format")
 	ErrInvalidID              = errors.New("invalid doctor ID format")
-	ErrSpecializationRequired = errors.New("specialization is required")
 
 	ErrEmailUsed = errors.New("a doctor with this email already exists")
 
