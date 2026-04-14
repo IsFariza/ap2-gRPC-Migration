@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"time"
 
 	pb "github.com/IsFariza/ap2-gRPC-Migration/appointment-service/appointment_proto"
 	"github.com/IsFariza/ap2-gRPC-Migration/appointment-service/internal/model"
@@ -21,18 +20,15 @@ func NewAppointmentHandler(uc interfaces.AppointmentUsecase) *appointmentHandler
 }
 
 func (h *appointmentHandler) CreateAppointment(ctx context.Context, req *pb.CreateAppointmentRequest) (*pb.AppointmentResponse, error) {
-	appt := &model.Appointment{
-		Title:       req.GetTitle(),
-		Description: req.GetDescription(),
-		DoctorID:    req.GetDoctorId(),
-	}
+
+	appt := toDomain(req)
 
 	err := h.uc.Create(ctx, appt)
 	if err != nil {
 		return nil, mapErrorToStatus(err)
 	}
 
-	return h.mapToProto(appt), nil
+	return toProto(appt), nil
 }
 
 func (h *appointmentHandler) GetAppointment(ctx context.Context, req *pb.GetAppointmentRequest) (*pb.AppointmentResponse, error) {
@@ -41,7 +37,7 @@ func (h *appointmentHandler) GetAppointment(ctx context.Context, req *pb.GetAppo
 		return nil, mapErrorToStatus(err)
 	}
 
-	return h.mapToProto(appt), nil
+	return toProto(appt), nil
 }
 
 func (h *appointmentHandler) ListAppointments(ctx context.Context, req *pb.ListAppointmentsRequest) (*pb.ListAppointmentsResponse, error) {
@@ -52,7 +48,7 @@ func (h *appointmentHandler) ListAppointments(ctx context.Context, req *pb.ListA
 
 	var pbAppts []*pb.AppointmentResponse
 	for _, appt := range appts {
-		pbAppts = append(pbAppts, h.mapToProto(appt))
+		pbAppts = append(pbAppts, toProto(appt))
 	}
 	return &pb.ListAppointmentsResponse{
 		Appointments: pbAppts,
@@ -69,17 +65,5 @@ func (h *appointmentHandler) UpdateAppointmentStatus(ctx context.Context, req *p
 	if err != nil {
 		return nil, mapErrorToStatus(err)
 	}
-	return h.mapToProto(updated), nil
-}
-
-func (h *appointmentHandler) mapToProto(appt *model.Appointment) *pb.AppointmentResponse {
-	return &pb.AppointmentResponse{
-		Id:          appt.ID,
-		Title:       appt.Title,
-		Description: appt.Description,
-		DoctorId:    appt.DoctorID,
-		Status:      string(appt.Status),
-		CreatedAt:   appt.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:   appt.UpdatedAt.Format(time.RFC3339),
-	}
+	return toProto(updated), nil
 }
