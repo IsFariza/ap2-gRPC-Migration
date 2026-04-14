@@ -24,7 +24,11 @@ func (uc *doctorUseCase) Create(ctx context.Context, doc model.Doctor) (*model.D
 	if doc.Email == "" {
 		return nil, model.ErrEmailRequired
 	}
-	existing, _ := uc.repo.GetByEmail(ctx, doc.Email)
+
+	existing, errEmail := uc.repo.GetByEmail(ctx, doc.Email)
+	if existing != nil && errEmail != model.ErrDoctorNotFound {
+		return nil, model.ErrEmailUsed
+	}
 	if existing != nil {
 		return nil, model.ErrEmailUsed
 	}
